@@ -26,7 +26,7 @@ print("Device selected: " + device)
 
 # Define data reading options
 positive_data_path = "positive_merged.csv.zip"
-negative_data_path = "negative_merged_typeCorrect.csv.zip"
+negative_data_path = "final_negative_merged.csv.zip"
 bert_model_path = "dbmdz/distilbert-base-turkish-cased"
 
 data_types = {
@@ -53,21 +53,24 @@ data_types = {
 }
 
 print("Loading data")
-positive_raw_data = pd.read_csv(positive_data_path, dtype=data_types, keep_default_na=False, index_col=False)
-positive_raw_data["label"] = 1.0
-# print(positive_raw_data.dtypes)
-
+ratio = 1/3  # 1:n positive negative
 negative_raw_data = pd.read_csv(negative_data_path, dtype=data_types, keep_default_na=False, index_col=False)
 negative_raw_data["label"] = 0.0
-# print(negative_raw_data.dtypes)
-print("Data loaded")
-print("Label ratio: {} positive".format(
-    positive_raw_data.shape[0] / (positive_raw_data.shape[0] + negative_raw_data.shape[0])
-))
+print("Number of negative examples: " + str(negative_raw_data.shape[0]))
 
 negative_raw_data[["account_creation_date", "account_creation_time"]] = negative_raw_data.account_creation_date.str.split(" ", 1, expand=True)
 negative_raw_data = negative_raw_data.drop(["account_creation_time"], axis = 1)
 # print(negative_raw_data["account_creation_date"])
+
+positive_raw_data = pd.read_csv(positive_data_path, dtype=data_types, keep_default_na=False, index_col=False)
+positive_raw_data["label"] = 1.0
+positive_raw_data = positive_raw_data[:int(negative_raw_data.shape[0]*ratio)]
+print("Number of positive examples: " + str(positive_raw_data.shape[0]))
+
+print("Data loaded")
+print("Label ratio: {} positive".format(
+    positive_raw_data.shape[0] / (positive_raw_data.shape[0] + negative_raw_data.shape[0])
+))
 
 merged_data = pd.concat([positive_raw_data, negative_raw_data], ignore_index=True)
 merged_data = merged_data.sample(frac=1)
@@ -100,7 +103,7 @@ def split_data(data, train=0.98, test=0.01, eval=0.01):
 
     return (train_data, test_data, eval_data)
 
-train_data, test_data, eval_data = split_data(merged_data)
+train_data, test_data, eval_data = split_data(merged_data, train=0.9, test=0.05, eval=0.05)
 print("Data split")
 
 # Save data
