@@ -229,11 +229,13 @@ def report_eval_metrics(model, test_data, step=0.01, batch_size=256):
         counts[threshold] = np.zeros(4)  # TP, TN, FP, FN in that order
         metrics[threshold] = np.zeros(5)  # accuracy, precision, recall, specificity, f1_score
 
+    batch_count = math.ceil(num_examples / batch_size)
+
     with torch.no_grad():
         for batch_start_index in range(0, num_examples, batch_size):
             batch_num = int(batch_start_index / batch_size)
-            # if batch_num % 25 == 0:
-            #     print(f"Batch {batch_num} started")
+            if batch_num % 25 == 0:
+                print(f"Eval batch {batch_num + 1}/{batch_count} started")
 
             batch_data = test_data[batch_num : min(batch_num + batch_size, num_examples)]
             feature_dict = process_data(batch_data).to(device)
@@ -301,7 +303,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
     batch_count = math.ceil(num_examples / batch_size)
 
     for epoch_num in range(num_epochs):
-        print(f"Epoch {epoch_num} started")
+        print(f"Train epoch {epoch_num + 1}/{num_epochs} started")
         train_data = train_data.sample(frac=1)  # Shuffle the batches each epoch
         total_epoch_loss = 0
 
@@ -310,7 +312,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
 
             batch_num = int(batch_start_index / batch_size)
             if batch_num % 250 == 0:
-                print(f"Train batch {batch_num} started")
+                print(f"Train batch {batch_num + 1}/{batch_count} started")
 
             batch_data = train_data[batch_num : min(batch_num + batch_size, num_examples)]
 
@@ -328,7 +330,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
             if device == "cuda":
                 torch.cuda.empty_cache()
 
-        print(f"Epoch {epoch_num} finished")
+        print(f"Train epoch {epoch_num + 1}/{num_epochs} finished")
         print("Average batch loss: " + str(total_epoch_loss / batch_count))
 
         intra_training_metrics = report_eval_metrics(model, test_data, step=0.01)
