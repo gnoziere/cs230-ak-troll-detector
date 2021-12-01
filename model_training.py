@@ -270,8 +270,8 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
     model = BertTweetClassifier(768, 64, len(float_features_names), 32, freeze_bert=freeze_bert, dropout_rate=dropout_rate).to(device)
     print("Model created")
 
-    pre_training_metrics = report_eval_metrics(model, test_data, step=0.01)
-    pre_training_metrics_path = "pointers/pre_training_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
+    pre_training_train_metrics = report_eval_metrics(model, train_data[:test_data.shape[0]], step=0.01)
+    pre_training_train_metrics_path = "pointers/pre_training_train_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
         batch_size,
         learning_rate,
         0 if freeze_bert else 1,
@@ -279,8 +279,20 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
         num_epochs,
     )
 
-    with open(pre_training_metrics_path, "wb") as f:
-        pickle.dump(pre_training_metrics, f)
+    with open(pre_training_train_metrics_path, "wb") as f:
+        pickle.dump(pre_training_train_metrics, f)
+
+    pre_training_test_metrics = report_eval_metrics(model, test_data, step=0.01)
+    pre_training_test_metrics_path = "pointers/pre_training_test_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
+        batch_size,
+        learning_rate,
+        0 if freeze_bert else 1,
+        dropout_rate,
+        num_epochs,
+    )
+
+    with open(pre_training_test_metrics_path, "wb") as f:
+        pickle.dump(pre_training_test_metrics, f)
 
 
     # Launch training
@@ -333,8 +345,8 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
         print(f"Train epoch {epoch_num + 1}/{num_epochs} finished")
         print("Average batch loss: " + str(total_epoch_loss / batch_count))
 
-        intra_training_metrics = report_eval_metrics(model, test_data, step=0.01)
-        intra_training_metrics_path = "pointers/intra_training_metrics_bs{}_lr{}_fb{}_dp{}_ep{}_{}.pkl".format(
+        intra_training_train_metrics = report_eval_metrics(model, train_data[:test_data.shape[0]], step=0.01)
+        intra_training_train_metrics_path = "pointers/intra_training_train_metrics_bs{}_lr{}_fb{}_dp{}_ep{}_{}.pkl".format(
             batch_size,
             learning_rate,
             0 if freeze_bert else 1,
@@ -343,8 +355,21 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
             num_epochs,
         )
 
-        with open(intra_training_metrics_path, "wb") as f:
-            pickle.dump(intra_training_metrics, f)
+        with open(intra_training_train_metrics_path, "wb") as f:
+            pickle.dump(intra_training_train_metrics, f)
+
+        intra_training_test_metrics = report_eval_metrics(model, test_data, step=0.01)
+        intra_training_test_metrics_path = "pointers/intra_training_test_metrics_bs{}_lr{}_fb{}_dp{}_ep{}_{}.pkl".format(
+            batch_size,
+            learning_rate,
+            0 if freeze_bert else 1,
+            dropout_rate,
+            epoch_num + 1,
+            num_epochs,
+        )
+
+        with open(intra_training_test_metrics_path, "wb") as f:
+            pickle.dump(intra_training_test_metrics, f)
 
     # Save and evaluate trained model
     print("Training done")
@@ -352,8 +377,8 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
     model_path = "pointers/model_bs{}_lr{}_ep{}.pt".format(batch_size, learning_rate, num_epochs)
     torch.save(model.state_dict(), model_path)
 
-    post_training_metrics = report_eval_metrics(model, test_data, step=0.01)
-    post_training_metrics_path = "pointers/post_training_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
+    post_training_train_metrics = report_eval_metrics(model, train_data[:test_data.shape[0]], step=0.01)
+    post_training_train_metrics_path = "pointers/post_training_train_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
         batch_size,
         learning_rate,
         0 if freeze_bert else 1,
@@ -361,8 +386,20 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
         num_epochs,
     )
 
-    with open(post_training_metrics_path, "wb") as f:
-        pickle.dump(post_training_metrics, f)
+    with open(post_training_train_metrics_path, "wb") as f:
+        pickle.dump(post_training_train_metrics, f)
+
+    post_training_test_metrics = report_eval_metrics(model, test_data, step=0.01)
+    post_training_test_metrics_path = "pointers/post_training_test_metrics_bs{}_lr{}_fb{}_dp{}_ep{}.pkl".format(
+        batch_size,
+        learning_rate,
+        0 if freeze_bert else 1,
+        dropout_rate,
+        num_epochs,
+    )
+
+    with open(post_training_test_metrics_path, "wb") as f:
+        pickle.dump(post_training_test_metrics, f)
 
 
 # Define hyperparamter sweep values
