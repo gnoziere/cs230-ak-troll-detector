@@ -235,7 +235,7 @@ def report_eval_metrics(model, test_data, step=0.01, batch_size=256):
         for batch_start_index in range(0, num_examples, batch_size):
             batch_num = int(batch_start_index / batch_size)
             if batch_num % 25 == 0:
-                print(f"Eval batch {batch_num + 1}/{batch_count} started")
+                print("Eval batch {}/{} started".format(batch_num + 1, batch_count))
 
             batch_data = test_data[batch_num : min(batch_num + batch_size, num_examples)]
             feature_dict = process_data(batch_data).to(device)
@@ -315,7 +315,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
     batch_count = math.ceil(num_examples / batch_size)
 
     for epoch_num in range(num_epochs):
-        print(f"Train epoch {epoch_num + 1}/{num_epochs} started")
+        print("Train epoch {}/{} started".format(epoch_num + 1, num_epochs))
         train_data = train_data.sample(frac=1)  # Shuffle the batches each epoch
         total_epoch_loss = 0
 
@@ -324,7 +324,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
 
             batch_num = int(batch_start_index / batch_size)
             if batch_num % 250 == 0:
-                print(f"Train batch {batch_num + 1}/{batch_count} started")
+                print("Train batch {}/{} started".format(batch_num + 1, batch_count))
 
             batch_data = train_data[batch_num : min(batch_num + batch_size, num_examples)]
 
@@ -342,7 +342,7 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
             if device == "cuda":
                 torch.cuda.empty_cache()
 
-        print(f"Train epoch {epoch_num + 1}/{num_epochs} finished")
+        print("Train epoch {}/{} finished".format(epoch_num + 1, num_epochs))
         print("Average batch loss: " + str(total_epoch_loss / batch_count))
 
         intra_training_train_metrics = report_eval_metrics(model, train_data[:test_data.shape[0]], step=0.01)
@@ -432,11 +432,11 @@ num_epochs_vals = [5]
 freeze_bert_vals = [True, False]
 dropout_rate_vals = [0.1, 0.5]
 
-for dropout_rate in dropout_rate_vals.reverse():
-    for batch_size in batch_size_vals.reverse():
-        for learning_rate in learning_rate_vals.reverse():
-            for num_epochs in num_epochs_vals.reverse():
-                for freeze_bert in freeze_bert_vals.reverse():
+for dropout_rate in reversed(dropout_rate_vals):
+    for batch_size in reversed(batch_size_vals):
+        for learning_rate in reversed(learning_rate_vals):
+            for num_epochs in reversed(num_epochs_vals):
+                for freeze_bert in reversed(freeze_bert_vals):
                     # Launch each training instance
                     train_model(
                         train_data,
