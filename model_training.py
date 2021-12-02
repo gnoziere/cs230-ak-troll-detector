@@ -403,24 +403,47 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
 
 
 # Define hyperparamter sweep values
-batch_size_vals = [32, 64]
-learning_rate_vals = [1e-5, 1e-3, 1e-1]
-num_epochs_vals = [3, 5, 10]
-freeze_bert_vals = [True, False]
-dropout_rate_vals = [0.1, 0.5, 0.75]
+# batch_size_vals = [32, 64]
+# learning_rate_vals = [1e-5, 1e-3, 1e-1]
+# num_epochs_vals = [3, 5, 10]
+# freeze_bert_vals = [True, False]
+# dropout_rate_vals = [0.1, 0.5, 0.75]
+#
+# for batch_size in batch_size_vals:
+#     for learning_rate in learning_rate_vals:
+#         for num_epochs in num_epochs_vals:
+#             for freeze_bert in freeze_bert_vals:
+#                 for dropout_rate in dropout_rate_vals:
+#                     # Launch each training instance
+#                     train_model(
+#                         train_data,
+#                         test_data,
+#                         batch_size,
+#                         learning_rate,
+#                         num_epochs,
+#                         freeze_bert,
+#                         dropout_rate,
+#                     )
 
-for batch_size in batch_size_vals:
-    for learning_rate in learning_rate_vals:
-        for num_epochs in num_epochs_vals:
-            for freeze_bert in freeze_bert_vals:
-                for dropout_rate in dropout_rate_vals:
-                    # Launch each training instance
-                    train_model(
-                        train_data,
-                        test_data,
-                        batch_size,
-                        learning_rate,
-                        num_epochs,
-                        freeze_bert,
-                        dropout_rate,
-                    )
+# Define hyperparamter sweep values
+batch_size_vals = [32, 64]
+learning_rate_vals = [1e-5, 1e-3]
+num_epochs_vals = [5]
+freeze_bert_vals = [True, False]
+dropout_rate_vals = [0.1, 0.5]
+
+for dropout_rate in dropout_rate_vals.reverse():
+    for batch_size in batch_size_vals.reverse():
+        for learning_rate in learning_rate_vals.reverse():
+            for num_epochs in num_epochs_vals.reverse():
+                for freeze_bert in freeze_bert_vals.reverse():
+                        # Launch each training instance
+                        train_model(
+                            train_data,
+                            test_data,
+                            batch_size,
+                            learning_rate,
+                            num_epochs,
+                            freeze_bert,
+                            dropout_rate,
+                        )
