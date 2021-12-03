@@ -107,19 +107,19 @@ train_data, test_data, eval_data = split_data(merged_data, train=0.9, test=0.05,
 print("Data split")
 
 # Save data
-train_data_path = "train_data.zip"
-test_data_path = "test_data.zip"
-eval_data_path = "eval_data.zip"
-print("Examples per split: {} / {} / {} (train / test / eval)".format(
-    train_data.shape[0],
-    test_data.shape[0],
-    eval_data.shape[0],
-))
-
-train_data.to_csv(train_data_path, index=False)
-test_data.to_csv(test_data_path, index=False)
-eval_data.to_csv(eval_data_path, index=False)
-print("Data saved")
+# train_data_path = "train_data.zip"
+# test_data_path = "test_data.zip"
+# eval_data_path = "eval_data.zip"
+# print("Examples per split: {} / {} / {} (train / test / eval)".format(
+#     train_data.shape[0],
+#     test_data.shape[0],
+#     eval_data.shape[0],
+# ))
+#
+# train_data.to_csv(train_data_path, index=False)
+# test_data.to_csv(test_data_path, index=False)
+# eval_data.to_csv(eval_data_path, index=False)
+# print("Data saved")
 
 
 # Define features
@@ -402,41 +402,18 @@ def train_model(train_data, test_data, batch_size=32, learning_rate=1e-5, num_ep
         pickle.dump(post_training_test_metrics, f)
 
 
-# Define hyperparamter sweep values
-# batch_size_vals = [32, 64]
-# learning_rate_vals = [1e-5, 1e-3, 1e-1]
-# num_epochs_vals = [3, 5, 10]
-# freeze_bert_vals = [True, False]
-# dropout_rate_vals = [0.1, 0.5, 0.75]
-#
-# for batch_size in batch_size_vals:
-#     for learning_rate in learning_rate_vals:
-#         for num_epochs in num_epochs_vals:
-#             for freeze_bert in freeze_bert_vals:
-#                 for dropout_rate in dropout_rate_vals:
-#                     # Launch each training instance
-#                     train_model(
-#                         train_data,
-#                         test_data,
-#                         batch_size,
-#                         learning_rate,
-#                         num_epochs,
-#                         freeze_bert,
-#                         dropout_rate,
-#                     )
-
-# Define hyperparamter sweep values
+Define hyperparamter sweep values
 batch_size_vals = [32, 64]
-learning_rate_vals = [1e-5, 1e-3]
-num_epochs_vals = [5]
+learning_rate_vals = [1e-5, 1e-4, 1e-3]
+num_epochs_vals = [3, 5, 10]
 freeze_bert_vals = [True, False]
-dropout_rate_vals = [0.1, 0.5]
+dropout_rate_vals = [0.1, 0.2, 0.3, 0.4, 0.5]
 
-for dropout_rate in reversed(dropout_rate_vals):
-    for batch_size in reversed(batch_size_vals):
-        for learning_rate in reversed(learning_rate_vals):
-            for num_epochs in reversed(num_epochs_vals):
-                for freeze_bert in reversed(freeze_bert_vals):
+for batch_size in batch_size_vals:
+    for learning_rate in learning_rate_vals:
+        for num_epochs in num_epochs_vals:
+            for freeze_bert in freeze_bert_vals:
+                for dropout_rate in dropout_rate_vals:
                     # Launch each training instance
                     train_model(
                         train_data,
